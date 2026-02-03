@@ -1,32 +1,151 @@
-<script>
-const gridLetters = [
-  // 0–9
-  "H","A","S","S","A","N","Q","R","T","L",
-  // 10–19
-  "M","K","X","X","X","X","E","O","U","O",
-  // 20–29
-  "A","X","I","X","X","X","A","V","Y","V",
-  // 30–39
-  "L","X","X","S","X","X","R","E","Z","E",
-  // 40–49
-  "I","X","X","X","S","X","T","X","X","S",
-  // 50–59
-  "H","X","X","X","X","L","X","X","X","X",
-  // 60–69
-  "A","X","X","X","X","E","X","X","X","X",
-  // 70–79
-  "X","X","X","X","X","N","X","X","X","X",
-  // 80–89
-  "X","X","X","X","X","T","X","X","X","X",
-  // 90–99
-  "V","A","L","E","N","T","I","N","E","S"
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Word Search 💖</title>
 
-// fill X with random letters
+<style>
+body {
+  margin: 0;
+  background: linear-gradient(#ffd6ea, #ffeaf5);
+  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+.container {
+  background: #fff0f7;
+  padding: 25px;
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(255,105,180,.35);
+  text-align: center;
+}
+
+h1 {
+  color: #ff4f9a;
+}
+
+.word-bank {
+  color: #c2185b;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.word-bank span {
+  margin: 0 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 38px);
+  gap: 5px;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.cell {
+  width: 38px;
+  height: 38px;
+  background: #ffe3f0;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: bold;
+  color: #c2185b;
+  cursor: pointer;
+}
+
+.cell.selected {
+  background: #ff9ecb;
+  color: white;
+}
+
+.cell.found {
+  background: #ff4f9a;
+  color: white;
+}
+
+#message {
+  display: none;
+  font-size: 28px;
+  color: #ff2f92;
+  margin-top: 10px;
+}
+
+.heart {
+  position: fixed;
+  font-size: 18px;
+  animation: float 1.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes float {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-70px) scale(1.6); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgMusic" src="song.mp3" loop></audio>
+
+<div class="container">
+  <h1>💕 Valentine Word Search 💕</h1>
+
+  <div class="word-bank">
+    <span>HASSAN</span>
+    <span>MALIHA</span>
+    <span>KISS</span>
+    <span>LOVE</span>
+    <span>VALENTINES</span>
+    <span>HEART</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div id="message">Congratulations my smarty 💕</div>
+</div>
+
+<script>
+const size = 10;
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-for (let i = 0; i < gridLetters.length; i++) {
-  if (gridLetters[i] === "X") {
-    gridLetters[i] = alphabet[Math.floor(Math.random() * alphabet.length)];
+const grid = Array(size * size).fill("");
+
+function placeWord(word, start, step) {
+  for (let i = 0; i < word.length; i++) {
+    grid[start + i * step] = word[i];
+  }
+}
+
+/* WORD PLACEMENTS (VERIFIED) */
+// HASSAN → row 0
+placeWord("HASSAN", 0, 1);
+
+// LOVE → row 2
+placeWord("LOVE", 20, 1);
+
+// MALIHA → column 0
+placeWord("MALIHA", 0, 10);
+
+// HEART → column 6
+placeWord("HEART", 6, 10);
+
+// KISS → diagonal
+placeWord("KISS", 11, 11);
+
+// VALENTINES → diagonal up-right
+placeWord("VALENTINES", 90, -9);
+
+// fill empty spots with random letters
+for (let i = 0; i < grid.length; i++) {
+  if (grid[i] === "") {
+    grid[i] = alphabet[Math.floor(Math.random() * alphabet.length)];
   }
 }
 
@@ -35,15 +154,13 @@ let foundWords = new Set();
 let isDragging = false;
 let selectedCells = [];
 
-const grid = document.getElementById("grid");
-grid.innerHTML = "";
+const gridEl = document.getElementById("grid");
 
-gridLetters.forEach((letter, index) => {
+grid.forEach(letter => {
   const cell = document.createElement("div");
   cell.className = "cell";
   cell.textContent = letter;
-  cell.dataset.index = index;
-  grid.appendChild(cell);
+  gridEl.appendChild(cell);
 
   cell.addEventListener("mousedown", () => startSelect(cell));
   cell.addEventListener("mouseenter", () => dragSelect(cell));
@@ -76,7 +193,10 @@ function endSelect() {
   }
 
   clearSelection();
-  checkWin();
+  if (foundWords.size === words.length) {
+    document.getElementById("message").style.display = "block";
+    sparkleHearts();
+  }
 }
 
 function selectCell(cell) {
@@ -103,10 +223,15 @@ function sparkleHearts() {
   }
 }
 
-function checkWin() {
-  if (foundWords.size === words.length) {
-    document.getElementById("message").style.display = "block";
-    sparkleHearts();
+// start music on first click
+let musicStarted = false;
+document.body.addEventListener("click", () => {
+  if (!musicStarted) {
+    document.getElementById("bgMusic").play();
+    musicStarted = true;
   }
-}
+});
 </script>
+
+</body>
+</html>
