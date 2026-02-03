@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Puzzle 💖</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+  background: linear-gradient(#ffd6ea, #ffeaf5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+.container {
+  background: #fff0f7;
+  padding: 20px 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+  text-align: center;
+  max-width: 420px;
+}
+
+h1 {
+  color: #ff4f9a;
+  margin-bottom: 8px;
+}
+
+.word-bank {
+  margin-bottom: 15px;
+  color: #c2185b;
+  font-weight: bold;
+}
+
+.word-bank span {
+  margin: 0 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 34px);
+  grid-gap: 4px;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.cell {
+  width: 34px;
+  height: 34px;
+  background: #ffe3f0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #c2185b;
+  cursor: pointer;
+}
+
+.cell.selected {
+  background: #ff9ecb;
+  color: white;
+}
+
+.cell.found {
+  background: #ff4f9a;
+  color: white;
+}
+
+#message {
+  font-size: 26px;
+  color: #ff2f92;
+  margin-top: 15px;
+  display: none;
+}
+
+.heart {
+  position: fixed;
+  color: #ff4f9a;
+  font-size: 18px;
+  animation: float 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-60px) scale(1.6);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgMusic" src="song.mp4" loop></audio>
+
+<div class="container" id="game">
+  <h1>💕 Valentine Puzzle 💕</h1>
+
+  <div class="word-bank">
+    <span>HASSAN</span>
+    <span>MALIHA</span>
+    <span>KISS</span>
+    <span>LOVE</span>
+    <span>VALENTINES</span>
+    <span>HEART</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div id="message">Congratulations my smarty 💖</div>
+</div>
+
+<script>
+const gridLetters = [
+  "H","A","S","S","A","N","L","O","V","E",
+  "M","A","L","I","H","A","E","A","R","T",
+  "K","I","S","S","V","A","L","E","N","T",
+  "E","S","X","X","X","I","N","E","S","X",
+  "X","X","X","X","X","X","X","X","X","X"
+];
+
+const words = ["HASSAN","MALIHA","KISS","LOVE","VALENTINES","HEART"];
+let foundWords = new Set();
+
+const grid = document.getElementById("grid");
+let isDragging = false;
+let selectedCells = [];
+
+gridLetters.forEach((letter, index) => {
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.textContent = letter;
+  cell.dataset.index = index;
+  grid.appendChild(cell);
+
+  cell.addEventListener("mousedown", () => startSelect(cell));
+  cell.addEventListener("mouseenter", () => dragSelect(cell));
+  cell.addEventListener("mouseup", endSelect);
+});
+
+document.addEventListener("mouseup", endSelect);
+
+function startSelect(cell) {
+  clearSelection();
+  isDragging = true;
+  selectCell(cell);
+}
+
+function dragSelect(cell) {
+  if (isDragging) selectCell(cell);
+}
+
+function endSelect() {
+  if (!isDragging) return;
+  isDragging = false;
+
+  const word = selectedCells.map(c => c.textContent).join("");
+  const reverse = word.split("").reverse().join("");
+
+  if (words.includes(word) || words.includes(reverse)) {
+    selectedCells.forEach(c => c.classList.add("found"));
+    foundWords.add(word);
+    sparkleHearts();
+  }
+
+  clearSelection();
+  checkWin();
+}
+
+function selectCell(cell) {
+  if (!selectedCells.includes(cell)) {
+    cell.classList.add("selected");
+    selectedCells.push(cell);
+  }
+}
+
+function clearSelection() {
+  selectedCells.forEach(c => c.classList.remove("selected"));
+  selectedCells = [];
+}
+
+function sparkleHearts() {
+  for (let i = 0; i < 12; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.top = Math.random() * window.innerHeight + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1500);
+  }
+}
+
+function checkWin() {
+  if (foundWords.size >= words.length) {
+    document.getElementById("message").style.display = "block";
+    sparkleHearts();
+  }
+}
+
+/* Start music on first interaction */
+let musicStarted = false;
+document.body.addEventListener("click", () => {
+  if (!musicStarted) {
+    document.getElementById("bgMusic").play();
+    musicStarted = true;
+  }
+});
+</script>
+
+</body>
+</html>
