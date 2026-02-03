@@ -123,26 +123,27 @@ function placeWord(word, start, step) {
   }
 }
 
-/* WORD PLACEMENTS (VERIFIED) */
+/* ✅ REAL WORD SEARCH PLACEMENTS */
+
 // HASSAN → row 0
 placeWord("HASSAN", 0, 1);
 
-// LOVE → row 2
-placeWord("LOVE", 20, 1);
+// LOVE → row 1
+placeWord("LOVE", 12, 1);
 
-// MALIHA → column 0
-placeWord("MALIHA", 0, 10);
+// VALENTINES → row 8
+placeWord("VALENTINES", 80, 1);
 
-// HEART → column 6
-placeWord("HEART", 6, 10);
+// MALIHA → column 9
+placeWord("MALIHA", 9, 10);
 
-// KISS → diagonal
-placeWord("KISS", 11, 11);
+// HEART → column 7
+placeWord("HEART", 27, 10);
 
-// VALENTINES → diagonal up-right
-placeWord("VALENTINES", 90, -9);
+// KISS → diagonal down-right
+placeWord("KISS", 40, 11);
 
-// fill empty spots with random letters
+// fill remaining cells with random letters
 for (let i = 0; i < grid.length; i++) {
   if (grid[i] === "") {
     grid[i] = alphabet[Math.floor(Math.random() * alphabet.length)];
@@ -193,6 +194,7 @@ function endSelect() {
   }
 
   clearSelection();
+
   if (foundWords.size === words.length) {
     document.getElementById("message").style.display = "block";
     sparkleHearts();
@@ -223,7 +225,7 @@ function sparkleHearts() {
   }
 }
 
-// start music on first click
+// start music on first interaction
 let musicStarted = false;
 document.body.addEventListener("click", () => {
   if (!musicStarted) {
