@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Valentine Puzzle 💖</title>
+<title>Valentine Word Search 💖</title>
 
 <style>
 body {
   margin: 0;
-  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
   background: linear-gradient(#ffd6ea, #ffeaf5);
+  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,22 +18,21 @@ body {
 
 .container {
   background: #fff0f7;
-  padding: 20px 25px 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+  padding: 25px;
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(255, 105, 180, 0.35);
   text-align: center;
-  max-width: 420px;
 }
 
 h1 {
   color: #ff4f9a;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .word-bank {
-  margin-bottom: 15px;
   color: #c2185b;
   font-weight: bold;
+  margin-bottom: 15px;
 }
 
 .word-bank span {
@@ -42,21 +41,21 @@ h1 {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(10, 34px);
-  grid-gap: 4px;
+  grid-template-columns: repeat(10, 38px);
+  grid-gap: 5px;
   justify-content: center;
-  margin: 15px 0;
+  margin-bottom: 15px;
 }
 
 .cell {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   background: #ffe3f0;
-  border-radius: 8px;
+  border-radius: 9px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 16px;
+  justify-content: center;
+  font-size: 17px;
   font-weight: bold;
   color: #c2185b;
   cursor: pointer;
@@ -73,29 +72,22 @@ h1 {
 }
 
 #message {
-  font-size: 26px;
+  font-size: 28px;
   color: #ff2f92;
-  margin-top: 15px;
   display: none;
+  margin-top: 12px;
 }
 
 .heart {
   position: fixed;
-  color: #ff4f9a;
   font-size: 18px;
-  animation: float 1.5s ease-out forwards;
+  animation: float 1.6s ease-out forwards;
   pointer-events: none;
 }
 
 @keyframes float {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-60px) scale(1.6);
-    opacity: 0;
-  }
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-70px) scale(1.6); opacity: 0; }
 }
 </style>
 </head>
@@ -104,8 +96,8 @@ h1 {
 
 <audio id="bgMusic" src="song.mp4" loop></audio>
 
-<div class="container" id="game">
-  <h1>💕 Valentine Puzzle 💕</h1>
+<div class="container">
+  <h1>💕 Valentine Word Search 💕</h1>
 
   <div class="word-bank">
     <span>HASSAN</span>
@@ -122,20 +114,45 @@ h1 {
 </div>
 
 <script>
+const gridSize = 10;
+
+/*
+ WORD PLACEMENTS:
+ - HASSAN → horizontal
+ - MALIHA → vertical
+ - KISS → diagonal
+ - LOVE → horizontal
+ - HEART → vertical
+ - VALENTINES → diagonal
+*/
+
 const gridLetters = [
-  "H","A","S","S","A","N","L","O","V","E",
-  "M","A","L","I","H","A","E","A","R","T",
-  "K","I","S","S","V","A","L","E","N","T",
-  "E","S","X","X","X","I","N","E","S","X",
-  "X","X","X","X","X","X","X","X","X","X"
+  "H","A","S","S","A","N","Q","R","T","L",
+  "M","X","X","X","X","X","E","O","U","O",
+  "A","X","K","X","X","X","A","V","Y","V",
+  "L","X","X","I","X","X","R","E","Z","E",
+  "I","X","X","X","S","X","T","X","X","S",
+  "H","X","X","X","X","L","X","X","X","X",
+  "A","X","X","X","X","E","X","X","X","X",
+  "X","X","X","X","X","N","X","X","X","X",
+  "X","X","X","X","X","T","X","X","X","X",
+  "X","X","X","X","X","I","N","E","S","X"
 ];
+
+// fill remaining X with random letters
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+for (let i = 0; i < gridLetters.length; i++) {
+  if (gridLetters[i] === "X") {
+    gridLetters[i] = alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+}
 
 const words = ["HASSAN","MALIHA","KISS","LOVE","VALENTINES","HEART"];
 let foundWords = new Set();
-
-const grid = document.getElementById("grid");
 let isDragging = false;
 let selectedCells = [];
+
+const grid = document.getElementById("grid");
 
 gridLetters.forEach((letter, index) => {
   const cell = document.createElement("div");
@@ -191,14 +208,14 @@ function clearSelection() {
 }
 
 function sparkleHearts() {
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 14; i++) {
     const heart = document.createElement("div");
     heart.className = "heart";
-    heart.textContent = "💖";
+    heart.textContent = "💗";
     heart.style.left = Math.random() * window.innerWidth + "px";
     heart.style.top = Math.random() * window.innerHeight + "px";
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 1500);
+    setTimeout(() => heart.remove(), 1600);
   }
 }
 
@@ -209,7 +226,7 @@ function checkWin() {
   }
 }
 
-/* Start music on first interaction */
+// start music on first click
 let musicStarted = false;
 document.body.addEventListener("click", () => {
   if (!musicStarted) {
